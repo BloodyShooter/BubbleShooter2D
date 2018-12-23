@@ -14,16 +14,20 @@ public class GamePanel extends JPanel implements Runnable {
     private BufferedImage image;
     private Graphics2D g;
 
-    private GameBack background;
+    public static GameBack background;
+    public static Player player;
 
     public GamePanel() {
         super();
 
         setPreferredSize(new Dimension(WIDTH, HEIGHT));
         setFocusable(true);
-
         requestFocus();
 
+    }
+
+    public void start() {
+        thread = new Thread(this);
         thread.start();
     }
 
@@ -31,13 +35,16 @@ public class GamePanel extends JPanel implements Runnable {
 
         image = new BufferedImage(WIDTH, HEIGHT, BufferedImage.TYPE_INT_RGB);
         g = (Graphics2D) image.getGraphics();
+        g.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
 
         background = new GameBack();
+        player = new Player();
 
         while (true) {
 
             gameUpdate();
             gameRender();
+            gameDraw();
 
             try {
                 thread.sleep(20);
@@ -48,9 +55,21 @@ public class GamePanel extends JPanel implements Runnable {
     }
 
     public void gameUpdate() {
+        background.update();
+
+        player.update();
     }
 
     public void gameRender() {
+        background.draw(g);
 
+        player.draw(g);
+    }
+
+    private void gameDraw() {
+        Graphics g2 = this.getGraphics();
+        g2.drawImage(image, 0, 0, null);
+
+        g2.dispose();
     }
 }
